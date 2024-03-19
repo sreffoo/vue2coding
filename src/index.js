@@ -6,6 +6,7 @@ function Vue(options) {// options就是用户的选项
 }
 
 // 扩展init方法，引这个包的时候就会马上调用，马上执行函数
+// 写第一行一样的
 initMixin(Vue) 
 
 export default Vue

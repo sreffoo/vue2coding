@@ -14,10 +14,16 @@
             data() {// 代理数据
                 return {
                     name: 'wz',
-                    age: 23
+                    age: 23,
+                    address: {
+                        num: 30,
+                        content: '文锦渡'
+                    }
                 }
             }
         })
+        console.log(vm);
+        console.log(vm.address.num);
     </script>
 </body>
 </html>
