@@ -11,19 +11,23 @@
     <script>
         // 响应式的数据变化，数据变化时可以监控到（取值与更改值）
         const vm = new Vue({
-            data() {// 代理数据
+            // 代理数据
+            data() {
                 return {
                     name: 'wz',
                     age: 23,
                     address: {
                         num: 30,
                         content: '文锦渡'
-                    }
+                    },
+                    // 很少用索引修改数组，每个元素都劫持浪费性能
+                    // 一般都通过方法修改
+                    hobby: ['messi','Barca','money',{a:1}]
                 }
             }
         })
+        vm.hobby.push({b:1})
         console.log(vm);
-        console.log(vm.address.num);
     </script>
 </body>
 </html>
