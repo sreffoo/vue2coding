@@ -1,5 +1,6 @@
 // rollup默认可以导出一个对象 作为打包的配置文件
 import babel from "@rollup/plugin-babel"
+import resolve from '@rollup/plugin-node-resolve'
 export default {
     input:'./src/index.js',// 入口
     output:{
@@ -13,6 +14,7 @@ export default {
             // 不打包node_modules(第三方模块)所有文件
             // 不需要转成es5语法(umd格式)
             exclude: 'node_modules/**' 
-        })
+        }),
+        resolve()
     ]
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div style="color: red;">
+            {{name}}
+        </div>
+        <br/>
+        <span> {{age}} </span>
+    </div>
+    <script src="./vue.js"></script>
+    <script>
+        // 响应式的数据变化，数据变化时可以监控到（取值与更改值）
+        const vm = new Vue({
+            data() {
+                return {
+                    name: 'wz',
+                    age: 23,
+                    address: {
+                        num: 30,
+                        content: '文锦渡'
+                    },
+                    hobby: ['messi','Barca','money',{a:1}]
+                }
+            },
+            // template: '<div>hello</div>',
+            el: '#app' // 将数据解析到el元素上
+        })
+        // vm.$mount('#app')
+
+        // Vue1.0使用模板引擎，每次都要拿到模板进行替换，需要正则表达式，性能差
+        // Vue2.0采用虚拟DOM 需要将模板变成js语法 通过js语法生成虚拟DOM
+        // 将template语法转化为render函数
+    </script>
+</body>
+</html>

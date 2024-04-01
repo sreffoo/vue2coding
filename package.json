@@ -15,5 +15,8 @@
     "@rollup/plugin-babel": "^6.0.4",
     "rollup": "^4.13.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3"
+  }
 }
