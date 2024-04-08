@@ -37,11 +37,17 @@
         })
         // vm.$mount('#app')
 
-        setTimeout(() => {
-            vm.name = 'hwz'
-            vm.age = 18
-            // vm._update(vm._render())
-        }, 1000);
+        // setTimeout(() => {
+        //     vm.name = 'hwz'
+        //     vm.age = 18
+        //     // vm._update(vm._render())
+        // }, 1000);
+
+        vm.name = 'messi' // 不会立即渲染页面
+        console.log(app.innerHTML);
+        vm.$nextTick(()=>{
+            console.log(app.innerHTML);
+        })
 
         // Vue1.0使用模板引擎，每次都要拿到模板进行替换，需要正则表达式，性能差
         // Vue2.0采用虚拟DOM 需要将模板变成js语法 通过js语法生成虚拟DOM
