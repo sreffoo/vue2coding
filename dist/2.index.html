@@ -7,6 +7,10 @@
     <title>Document</title>
 </head>
 <body>
+    <!-- 给模板中的每个属性增加一个收集器 dep -->
+    <!-- 页面渲染时将渲染逻辑封装到watcher中 vm._update(vm._render()) -->
+    <!-- 让dep记住这个watcher即可 稍后属性变化了可以找到对应dep中watcher重新渲染 -->
+    <!-- 观察者模式 -->
     <div id="app" style="color:red;background:yellow">
         <div style="color:green">
             {{    name   }} hello {{age}} hello
@@ -36,12 +40,17 @@
         setTimeout(() => {
             vm.name = 'hwz'
             vm.age = 18
-            vm._update(vm._render())
+            // vm._update(vm._render())
         }, 1000);
 
         // Vue1.0使用模板引擎，每次都要拿到模板进行替换，需要正则表达式，性能差
         // Vue2.0采用虚拟DOM 需要将模板变成js语法 通过js语法生成虚拟DOM
         // 将template语法转化为render函数
+
+        // 1、将数据处理成响应式 initState（对象增加defineProperty 数组重写方法）
+        // 2、模板编译：将模板转化为ast语法树，ast语法树生成**render**方法
+        // 3、调用render 进行取值操作 产生对应虚拟DOM 触发get方法
+        // 4、将虚拟DOM渲染成真实DOM
     </script>
 </body>
 </html>

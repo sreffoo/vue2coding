@@ -1,4 +1,5 @@
 import { newArrayProto } from "./array"
+import Dep from "./dep"
 
 class Observer{// 用于观测，观测的方法都写在里面
     
@@ -37,9 +38,15 @@ export function defineReactive(target, key, value) {// 闭包 当前执行栈不
     // 性能不怎么好
     observe(value)
 
+    let dep = new Dep() //每个属性都有dep(因为value有闭包,这里不会销毁)
+
     // 当更改值的时候也会暂存到value中，实现响应式？
     Object.defineProperty(target, key, {
         get() {// 取值的时候 会执行get
+            if (Dep.target) {
+                // 用到的属性才会收集依赖 但是每个属性都有Dep ****
+                dep.depend()// 让这个属性的收集器记住当前的watcher
+            }
             return value
         },
         set(newValue) {// 修改的时候 会执行set
@@ -47,6 +54,7 @@ export function defineReactive(target, key, value) {// 闭包 当前执行栈不
             // set的值可能又是一个对象 再次代理
             observe(newValue)
             value = newValue
+            dep.notify() // 通知更新
         }
     })
 }

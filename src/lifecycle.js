@@ -1,3 +1,4 @@
+import Watcher from "./observe/watcher";
 import { createElementVNode, createTextVNode } from "./vdom";
 
 // 创建真实DOM
@@ -78,10 +79,13 @@ export function initLifeCycle(Vue) {
 export function mountComponent(vm, el) {
     // 这里的el是通过querySelector处理过的 options的没处理过
     vm.$el = el
-    
-    // 1.调用render方法产生虚拟节点 虚拟DOM
-    vm._update(vm._render()) // vm.$options.render() 返回虚拟节点
 
+    // 1.调用render方法产生虚拟节点 虚拟DOM
+    const updateComponent = ()=>{
+        vm._update(vm._render()) // vm.$options.render() 返回虚拟节点
+    }
+    const watcher = new Watcher(vm,updateComponent,true)// true用于标识是一个渲染watcher
+    console.log(watcher);
     // 2.根据虚拟节点产生真实DOM
 
     // 3.插入到el元素中
