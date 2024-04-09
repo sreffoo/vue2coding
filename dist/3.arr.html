@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        {{arr}}
+    </div>
+    <script src="vue.js"></script>
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                arr: [1,2,3] // 数组或对象直接新增某一项触发dep，但还要$set通知更新
+            },
+        })
+        setTimeout(() => {
+            vm.arr.push(100)
+            // vm.arr[0] = 1
+        }, 1000);
+    </script>
+</body>
+</html>

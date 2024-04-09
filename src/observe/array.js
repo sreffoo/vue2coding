@@ -45,6 +45,8 @@ methods.forEach(method => {
             ob.observeArray(inserted)
         }
 
+        ob.dep.notify() // 数组变化 通知对应watcher实现更新
+
         return result
     }
 })

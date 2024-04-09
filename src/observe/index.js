@@ -4,6 +4,9 @@ import Dep from "./dep"
 class Observer{// 用于观测，观测的方法都写在里面
     
     constructor(data) {
+        // 给每个对象都增加收集功能(所有对象)
+        this.dep = new Dep()
+
         // Object.defineProperty只能劫持已经存在的属性（vue里会因此单独写一些api $set $delete）
         
         // 自定义一个属性放this 同时给数据加了标识，有则说明被观测过
@@ -31,12 +34,24 @@ class Observer{// 用于观测，观测的方法都写在里面
     }
 }
 
+// 深层次嵌套递归多了性能差 不存在的属性监控不到 存在的属性要重写方法
+// 因此Vue3采用proxy
+function dependArray(value) {
+    for (let i = 0; i < value.length; i++) {
+        let current = value[i]
+        current.__ob__ && current.__ob__.dep.depend()
+        if (Array.isArray(current)) {
+            dependArray(current)
+        }        
+    }
+}
+
 // ‘属性劫持’ 定义为公共api 后续可能供导出使用，因此没有写到类里面
 export function defineReactive(target, key, value) {// 闭包 当前执行栈不销毁，get set都能拿到value
     
     // value可能又是一个对象，要对所有属性进行递归劫持（深度属性劫持）
     // 性能不怎么好
-    observe(value)
+    let childOb = observe(value)// childOb.dep用来收集依赖
 
     let dep = new Dep() //每个属性都有dep(因为value有闭包,这里不会销毁)
 
@@ -46,6 +61,14 @@ export function defineReactive(target, key, value) {// 闭包 当前执行栈不
             if (Dep.target) {
                 // 用到的属性才会收集依赖 但是每个属性都有Dep ****
                 dep.depend()// 让这个属性的收集器记住当前的watcher
+                if(childOb) {
+                    // 让数组和对象本身实现依赖收集
+                    childOb.dep.depend()
+                    // 处理数组里的嵌套数组
+                    if (Array.isArray(value)) {
+                        dependArray(value)
+                    }
+                }
             }
             return value
         },
