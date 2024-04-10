@@ -23,7 +23,7 @@ methods.forEach(method => {
 
         //TODO:...
         const result = oldArrayProto[method].call(this, ...args)// 这里this要改成arr的this push.call(arr)
-        console.log(method);
+        // console.log(method);
 
         // 如果新增的数据是对象，还需要继续劫持
         let inserted

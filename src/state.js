@@ -1,9 +1,13 @@
 import { observe } from "./observe/index"
+import Watcher from "./observe/watcher"
 
 export function initState(vm) {
     const opts = vm.$options// 获取所有的选项
     if (opts.data) {
         initData(vm)
+    }
+    if (opts.computed) {
+        initComputed(vm)
     }
 }
 
@@ -34,5 +38,43 @@ function initData(vm) {
     // 将vm._data 用vm代理，方便用户取值
     for (let key in data) {
         proxy(vm,'_data',key)
+    }
+}
+
+function initComputed(vm) {
+    const computed = vm.$options.computed
+    const watchers = vm._computedWatchers = {}
+    for (let key in computed) {
+        let userDef = computed[key]
+        // 监控计算属性中get的变化
+        let fn = typeof userDef === 'function' ? userDef : userDef.get
+        // 如果直接new Watcher默认就会执行fn 将属性和watcher对应起来
+        watchers[key] = new Watcher(vm,fn,{lazy:true})
+
+        defineComputed(vm,key,userDef)
+    }
+}
+function defineComputed(target,key,userDef) {
+    // const getter = typeof userDef === 'function' ? userDef : userDef.get
+    const setter = userDef.set || (()=>{})
+
+    // 可以通过实例拿到对应的属性
+    Object.defineProperty(target,key,{
+        get:createComputedGetter(key),
+        set:setter
+    })
+}
+function createComputedGetter(key) {
+    // 检测是否执行这个getter
+    return function (){
+        // ****createComputedGetter作为target的get调用****
+        // js规范this指向target而不是target[key]
+        const watcher = this._computedWatchers[key]// 获取对应watcher
+        // 多次取值只有第一次是脏的
+        if(watcher.dirty){
+            // 如果是脏的就去执行 用户传入的函数
+            watcher.evaluate()
+        }
+        return watcher.value
     }
 }

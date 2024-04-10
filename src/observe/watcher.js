@@ -1,4 +1,4 @@
-import Dep from "./dep"
+import Dep, { popTarget, pushTarget } from "./dep"
 
 let id = 0
 
@@ -11,7 +11,10 @@ class Watcher{// 不同组件有不同watcher 目前就一个根实例的
         this.getter = fn // getter意味着调用函数可以发生取值操作
         this.deps = [] // watcher记住所有dep（计算属性、组件卸载等工作要用）
         this.depsId = new Set()
-        this.get()
+        this.lazy = options.lazy
+        this.dirty = this.lazy// 缓存值
+        this.vm = vm
+        this.lazy ? undefined : this.get()
     }
     addDep(dep) { // 一个组件 对应多个属性 重复的属性也不用记录
         let id = dep.id
@@ -21,11 +24,18 @@ class Watcher{// 不同组件有不同watcher 目前就一个根实例的
             dep.addSub(this) // watcher已经记住了dep并且去重 此时让dep也记住watcher
         }
     }
+    evaluate() {
+        // 获取用户函数的返回值并标识为脏
+        this.value = this.get()
+        this.dirty = false
+    }
     get() {
         // 类上增添一个静态属性 只有一份 全局变量 不需要通过实例调用(通过类) 所以不挂在原型上
-        Dep.target = this
-        this.getter() // 会去vm上取值 vm._update(vm._render())取值
-        Dep.target = null // 渲染完毕后就清空 因为只有在模板里面的时候才会收集依赖 外部不收集
+        pushTarget(this)
+        // TODO：为什么计算属性this会丢失
+        let value = this.getter.call(this.vm) // 会去vm上取值 vm._update(vm._render())取值
+        popTarget() // 渲染完毕后就清空 因为只有在模板里面的时候才会收集依赖 外部不收集
+        return value
     }
     update() {
         // this.get() // 立即重新渲染
