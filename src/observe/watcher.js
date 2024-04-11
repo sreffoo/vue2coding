@@ -37,9 +37,21 @@ class Watcher{// 不同组件有不同watcher 目前就一个根实例的
         popTarget() // 渲染完毕后就清空 因为只有在模板里面的时候才会收集依赖 外部不收集
         return value
     }
+    depend(){// watcher的depend是让watcher中的dep去depend
+        let i = this.deps.length
+        while(i--) {
+            // 让计算属性watcher也收集渲染watcher
+            this.deps[i].depend()
+        }
+    }
     update() {
-        // this.get() // 立即重新渲染
-        queueWatcher(this) // 把当前watcher暂存起来
+        if (this.lazy) {
+            // 如果是计算属性 依赖值变化 就标识计算属性是脏值
+            this.dirty = true
+        }else {
+            // this.get() // 立即重新渲染
+            queueWatcher(this) // 把当前watcher暂存起来
+        }
     }
     run() {
         this.get()

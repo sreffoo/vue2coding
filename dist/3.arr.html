@@ -19,7 +19,7 @@
         })
         setTimeout(() => {
             vm.arr.push(100)
-            // vm.arr[0] = 1
+            // vm.arr[0] = 1 // 这里会更新因为上一行代码触发了notice
         }, 1000);
     </script>
 </body>

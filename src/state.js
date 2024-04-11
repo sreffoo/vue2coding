@@ -1,3 +1,4 @@
+import Dep from "./observe/dep"
 import { observe } from "./observe/index"
 import Watcher from "./observe/watcher"
 
@@ -64,6 +65,8 @@ function defineComputed(target,key,userDef) {
         set:setter
     })
 }
+
+// Vue2计算属性不会收集依赖 只会让自己的依赖属性收集依赖
 function createComputedGetter(key) {
     // 检测是否执行这个getter
     return function (){
@@ -74,6 +77,10 @@ function createComputedGetter(key) {
         if(watcher.dirty){
             // 如果是脏的就去执行 用户传入的函数
             watcher.evaluate()
+        }
+        if(Dep.target) {
+            // 计算属性出栈后还要渲染watcher 让计算属性watcher里属性收集上一层watcher
+            watcher.depend()
         }
         return watcher.value
     }

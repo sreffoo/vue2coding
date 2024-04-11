@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id="app">
-        {{firstname}}
+        {{fullname}}
     </div>
     <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.js"></script> -->
     <script src="vue.js"></script>    
@@ -24,19 +24,20 @@
             // 计算属性也是一个watcher***
             // 依赖值修改只会引起watcher的dirty修改 不会重新渲染视图
             // 因此firstname的dep要同时记住计算属性以及包含计算属性的组件watcher
+            // 底层就是一个带有dirty属性的watcher
             computed: {
-                // fullname() {// defineproperty中的get方法
-                //     return this.firstname + this.lastname
-                // }
-                fullname: {
-                    get() {
-                        return this.firstname + this.lastname
-                    },
-                    set(newVal) {
-                        // 用的少 比如输入框v-model绑定
-                        console.log(newVal);
-                    }
+                fullname() {// defineproperty中的get方法
+                    return this.firstname + this.lastname
                 }
+                // fullname: {
+                //     get() {
+                //         return this.firstname + this.lastname
+                //     },
+                //     set(newVal) {
+                //         // 用的少 比如输入框v-model绑定
+                //         console.log(newVal);
+                //     }
+                // }
             }
         })
         setTimeout(() => {
