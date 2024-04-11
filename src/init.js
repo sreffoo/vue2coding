@@ -1,6 +1,7 @@
 import { compileToFunction } from "./compiler"
-import { mountComponent } from "./lifecycle"
+import { callHook, mountComponent } from "./lifecycle"
 import { initState } from "./state"
+import { mergeOptions } from "./utils"
 
 export function initMixin(Vue) {// 给Vue增加init方法
     // console.log(this);
@@ -9,14 +10,19 @@ export function initMixin(Vue) {// 给Vue增加init方法
         // $都是实例上自己的属性$nextTick $data等
         // 假如在data里面初始化一个$name，无法通过vm.$name拿到
         const vm = this
-        vm.$options = options// 将用户的选项挂载到实例上
-
+        // 定义的全局指令和过滤器等都会挂载到实例上
+        vm.$options = mergeOptions(this.constructor.options,options)// 将用户的选项挂载到实例上
+        console.log(vm.$options);
+        callHook(vm,'beforeCreate')
         // 初始化状态 计算属性 watch
         initState(vm)
+        callHook(vm,'created')
         
+        // callHook(vm,'beforeMount')
         if(options.el) {
             vm.$mount(options.el) // 数据挂载
         }
+        // callHook(vm,'mounted')
     }
 
     Vue.prototype.$mount = function(el) {

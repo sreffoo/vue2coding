@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <!-- {{firstname}} -->
+    </div>
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.js"></script> -->
+    <script src="vue.js"></script>    
+    <script>
+        // router vuex都是基于mixin实现的
+        Vue.mixin({
+            created() {
+                console.log('mixin1-created');
+            }
+        })
+        Vue.mixin({
+            created() {
+                console.log('mixin2-created');
+            }
+        })
+        // 发布 => 订阅
+        const vm = new Vue({
+            data: {
+                firstname: 'leo',
+                lastname: 'messi'
+            },
+            created() {
+                console.log('created');
+            }
+        })
+        // vue.mixin 混合 可以混入一些公共方法
+    </script>
+</body>
+</html>
