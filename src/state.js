@@ -10,6 +10,31 @@ export function initState(vm) {
     if (opts.computed) {
         initComputed(vm)
     }
+    if (opts.watch) {
+        initWatch(vm)
+    }
+}
+
+function initWatch(vm) {
+    let watch = vm.$options.watch
+    for(let key in watch) {
+        const handler = watch[key]// 字符串 数组 函数
+        if(Array.isArray(handler)) {
+            for(let i = 0; i < handler.length;i++) {
+                createWatch(vm,key,handler[i])
+            }
+        }else {
+            createWatch(vm,key,handler)
+        }
+    }
+}
+
+function createWatch(vm,key,handler) {
+    // 字符串 数组 函数
+    if(typeof handler == 'string') {
+        handler = vm[handler]
+    }
+    return vm.$watch(key,handler)
 }
 
 function proxy(vm, target, key) {

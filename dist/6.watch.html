@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.js"></script> -->
+    <script src="vue.js"></script>    
+    <script>
+        const vm = new Vue({
+            data: {
+                firstname: 'leo',
+                lastname: 'messi'
+            },
+            methods: {
+                fn(newValue,oldValue) {
+                    console.log(newValue,oldValue);
+                }
+            },
+            watch: {
+                // 还没有实现方法 用bind实现
+                // firstname: 'fn'
+                firstname() {
+                    console.log('ok');
+                }
+            }
+        })
+        vm.$watch(function expOrFn(){return vm.firstname},function cb(newValue,oldValue){
+            console.log(newValue,oldValue);
+        })
+
+        setTimeout(() => {
+            vm.firstname = '123'
+        }, 1000);
+
+        console.log(vm);
+    </script>
+</body>
+</html>

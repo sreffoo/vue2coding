@@ -12,7 +12,7 @@ export function initMixin(Vue) {// 给Vue增加init方法
         const vm = this
         // 定义的全局指令和过滤器等都会挂载到实例上
         vm.$options = mergeOptions(this.constructor.options,options)// 将用户的选项挂载到实例上
-        console.log(vm.$options);
+        // console.log(vm.$options);
         callHook(vm,'beforeCreate')
         // 初始化状态 计算属性 watch
         initState(vm)

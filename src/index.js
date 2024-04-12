@@ -1,10 +1,11 @@
 import { initGlobalAPI } from "./globalAPI"
 import { initMixin } from "./init"
 import { initLifeCycle } from "./lifecycle"
-import { nextTick } from "./observe/watcher"
+import Watcher, { nextTick } from "./observe/watcher"
 
 // es6的class会导致所有方法都耦合在一起
 function Vue(options) {// options就是用户的选项
+    console.log(options);
     this._init(options)
 }
 
@@ -16,5 +17,11 @@ initMixin(Vue)
 initLifeCycle(Vue)
 initGlobalAPI(Vue)
 
+Vue.prototype.$watch = function (expOrFn,cb) {
+    // firstname / ()=>vm.firstname
+
+    // firstname值变化了直接执行cb函数即可
+    new Watcher(this,expOrFn,{user:true},cb)
+}
 
 export default Vue
