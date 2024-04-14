@@ -1,6 +1,6 @@
 import Dep from "./observe/dep"
 import { observe } from "./observe/index"
-import Watcher from "./observe/watcher"
+import Watcher, { nextTick } from "./observe/watcher"
 
 export function initState(vm) {
     const opts = vm.$options// 获取所有的选项
@@ -108,5 +108,16 @@ function createComputedGetter(key) {
             watcher.depend()
         }
         return watcher.value
+    }
+}
+
+export function initStateMixin(Vue) {
+    Vue.prototype.$nextTick = nextTick
+
+    Vue.prototype.$watch = function (expOrFn,cb) {
+        // firstname / ()=>vm.firstname
+    
+        // firstname值变化了直接执行cb函数即可
+        new Watcher(this,expOrFn,{user:true},cb)
     }
 }
