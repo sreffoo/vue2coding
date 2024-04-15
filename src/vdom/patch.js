@@ -128,26 +128,84 @@ function updateChildren(el,oldChildren,newChildren) {
     let oldEndVnode = oldChildren[oldEndIndex]
     let newEndVnode = newChildren[newEndIndex]
 
+    function makeIndexByKey(children) {
+        let map = {}
+        children.forEach((child,index)=>{
+            map[child.key] = index
+        })
+        return map
+    }
+    
+    let map = makeIndexByKey(oldChildren)
+
     // 任意一方头指针大于尾指针停止循环
     while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
-        if (isSameVnode(oldStartVnode,newStartVnode)) {
+
+        // 空指针跳过
+        if (!oldStartVnode) {
+            oldStartVnode = oldChildren[++oldStartIndex]
+        }else if (!oldEndVnode) {
+            oldEndVnode = oldChildren[--oldEndIndex]
+        }else if (isSameVnode(oldStartVnode,newStartVnode)) {
+            // 比较头指针
             patchVnode(oldStartVnode,newStartVnode)// 相同节点递归比较子节点
             oldStartVnode = oldChildren[++oldStartIndex]
             newStartVnode = newChildren[++newStartIndex]
+        }else if (isSameVnode(oldEndVnode,newEndVnode)) {
+            // 比较尾指针
+            patchVnode(oldEndVnode,newEndVnode)// 相同节点递归比较子节点
+            oldEndVnode = oldChildren[--oldEndIndex]
+            newEndVnode = newChildren[--newEndIndex]
+        }else if (isSameVnode(oldEndVnode,newStartVnode)) {
+            patchVnode(oldEndVnode,newStartVnode)
+            // insertBefore具备移动性 会将原来的元素移走
+            el.insertBefore(oldEndVnode.el,oldStartVnode.el)
+            oldEndVnode = oldChildren[--oldEndIndex]
+            newStartVnode = newChildren[++newStartIndex]
+        }else if (isSameVnode(oldStartVnode, newEndVnode)) {
+            patchVnode(oldStartVnode,newEndVnode)
+            el.insertBefore(oldStartVnode.el,oldEndVnode.el.nextSibling)
+            oldStartVnode = oldChildren[++oldStartIndex]
+            newEndVnode = newChildren[--newEndIndex]
+        }else {
+            // 给动态列表添加key时尽量避免用索引，因为索引前后都是从0开始
+            // 很容易发生错误复用
+    
+            // 乱序比对
+            // 根据老列表做一个映射关系 用新的去找 找到则移动 找不到添加 最后多余的删除
+            let moveIndex = map[newStartVnode.key] // 能拿到说明是要移动的
+            if (moveIndex !== undefined) {
+                let moveVnode = oldChildren[moveIndex]// 找到对应虚拟节点复用
+                el.insertBefore(moveVnode.el,oldStartVnode.el)
+                oldChildren[moveIndex] = undefined// 表示节点已经移走了
+                patchVnode(moveVnode,newStartVnode)// 比对属性和子节点
+            }else {
+                el.insertBefore(createElm(newStartVnode),oldStartVnode.el)
+            }
+            newStartVnode = newChildren[++newStartIndex]
         }
+
     }
+
     if(newStartIndex <= newEndIndex) {// 新的多余的插入
         for (let i = newStartIndex; i <= newEndIndex; i++) {
             let childEl = createElm(newChildren[i]);
-            el.appendChild(childEl)
-        }
-    }
-    if(oldStartIndex <= oldEndIndex) {// 老的多余的删除
-        for (let i = oldStartIndex; i <= oldEndIndex; i++) {
-            let childEl = oldChildren[i].el;
-            el.removeChild(childEl)
+            // 这里可能是向后追加，也可能向前追加
+            // 获取下一个元素
+            let anchor = newChildren[newEndIndex + 1] ? newChildren[newEndIndex + 1].el : null
+            // anchor为null时会被认为是appendChild
+            el.insertBefore(childEl,anchor)
         }
     }
 
-    console.log(oldStartVnode,newStartVnode,oldEndVnode,newEndVnode);
+    if(oldStartIndex <= oldEndIndex) {// 老的多余的删除
+        for (let i = oldStartIndex; i <= oldEndIndex; i++) {
+            // 节点被”删“了为空
+            if (oldChildren[i]) {
+                let childEl = oldChildren[i].el;
+                el.removeChild(childEl)
+            }
+        }
+    }
+    // console.log(oldStartVnode,newStartVnode,oldEndVnode,newEndVnode);
 }
