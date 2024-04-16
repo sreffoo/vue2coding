@@ -13,6 +13,19 @@ LIFECYCLE.forEach(hook => {
         }
     };
 });
+
+strats.components = function(parentVal,childVal) {
+    const res = Object.create(parentVal)
+    if (childVal) {
+        for(let key in childVal) {
+            // 优先拿从儿子拷贝的 找不到就再拿父亲原型上的
+            res[key] = childVal[key]
+        }
+    }
+    // 返回的是构造的对象
+    return res
+}
+
 export function mergeOptions(parent, child) {
     const options = {};
 
@@ -36,6 +49,5 @@ export function mergeOptions(parent, child) {
             options[key] = child[key] || parent[key]; // 默认策略 优先采用儿子，在采用父亲
         }
     }
-
     return options;
 }

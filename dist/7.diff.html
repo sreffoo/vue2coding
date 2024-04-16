@@ -18,6 +18,15 @@
         // 第一次渲染产生虚拟DOM，第二次更新调用render产生新虚拟DOM
         // 比对出需要更新的部分内容
         // 2.组件渲染流程
+        const vm = new Vue({
+            el:'#app',
+            data() {
+                return {name:'wz'}
+            }
+        })
+        setTimeout(() => {
+            vm.name = 'hwz'
+        }, 1000);
     </script>
 </body>
 </html>

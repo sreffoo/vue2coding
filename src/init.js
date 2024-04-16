@@ -34,12 +34,12 @@ export function initMixin(Vue) {// 给Vue增加init方法
             if(!ops.template && el) { // 没写模板，但写了el
                 template = el.outerHTML
             }else {
-                if(el) {
-                    // 如果有el 采用模板内容
-                    template = ops.template
-                }
+                // if(el) {
+                //     // 如果有el 采用模板内容
+                // }
+                template = ops.template
             }
-            if(template) {
+            if(template) {// 只要有模板就挂载
                 // 这里需要对模板进行编译
                 const render = compileToFunction(template)
                 ops.render = render

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+
+    </div>
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.js"></script> -->
+    <script src="vue.js"></script>
+    <script>
+        // 组件三大特性 自定义标签 组件里有自己的属性和事件 组件的插槽
+        // Vue.component('my-button',{// 等同于Vue.options.components = {}
+        //     template:'<button>全局button</button>'
+        // })
+        // 模板渲染时要查找my-button组件
+        let Sub = Vue.extend({
+            template:'<button>子组件 <my-button></my-button></button>',
+            component: {
+                'my-button': {
+                    template: '<button>子组件自己生命的</button>'
+                }
+            }
+        })
+        new Sub().$mount('#root')// 在创建一个子组件watchr
+    </script>
+</body>
+</html>

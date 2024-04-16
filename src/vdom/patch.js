@@ -1,13 +1,28 @@
 import { isSameVnode } from ".";
 
+function createComponent(vnode) {
+    let i = vnode.data
+    if ((i = i.hook) && (i = i.init)) {
+        i(vnode)// 初始化组件 找到init方法
+    }
+    if (vnode.componentInstance) {
+        return true// 说明是组件
+    }
+}
+
 // 创建真实DOM
 export function createElm(vnode) {
     let {tag,data,children,text} = vnode
     if (typeof tag === 'string') {// 标签
+        // 创建真实DOM 要区分是组件还是元素
+        if (createComponent(vnode)) {// 组件
+            return vnode.componentInstance.$el
+        }
+
         vnode.el = document.createElement(tag) //将真实和虚拟DOM对应
         patchProps(vnode.el,{},data)
         children.forEach(child => {
-            vnode.el.appendChild(createElm(child))
+            vnode.el.appendChild(createElm(child))// 将组件创建的元素插入到父元素中
         });
     }else {
         vnode.el = document.createTextNode(text)
@@ -48,6 +63,11 @@ export function patchProps(el,oldProps = {},props = {}) {
 }
 
 export function patch(oldVNode,vnode) {
+
+    if (!oldVNode) {// 这就是组件的挂载
+        return createElm(vnode)// vm.$el 对应的就是组件渲染的结果
+    }
+
     // 初渲染流程
     const isRealElement = oldVNode.nodeType
     if (isRealElement) {
